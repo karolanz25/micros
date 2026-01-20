@@ -1,0 +1,59 @@
+minicom -D /dev/ttyUSB0 -b 115200
+
+
+# Para ver los archivos y recuperar la info de init.lua
+
+for k,v in pairs(file.list()) do print(k,v) end
+
+f = file.open("init.lua", "r"); if f then print("Abierto:", f); print(f:read()); f:close() else print("No abrio") end
+
+file.close()
+local f = file.open("init.lua", "r")
+if f then
+    repeat
+        local chunk = file.read(128, f)
+        if chunk then
+            uart.write(0, chunk)
+            tmr.delay(50000)
+        end
+    until not chunk
+    f:close()
+    print("\n--- TRANSFERENCIA FINALIZADA ---")
+else
+    print("Error: No se pudo abrir el archivo")
+end
+
+
+
+# Para borrar la memoria flash desde la shell
+
+esptool --port /dev/ttyUSB0 --baud 460800 erase_flash
+
+esptool --port /dev/ttyUSB0 --baud 460800 write_flash --flash_size=detect --flash_mode dout 0x00000 firmware.bin
+
+
+# Para subir un archivo
+
+npm install nodemcu-tool
+
+node_modules/nodemcu-tool/bin/nodemcu-tool.js upload init.lua --port /dev/ttyUSB0
+node_modules/nodemcu-tool/bin/nodemcu-tool.js reset --port /dev/ttyUSB0
+node_modules/nodemcu-tool/bin/nodemcu-tool.js terminal --port /dev/ttyUSB0
+
+
+# Ejemplo de blink
+pin = 4
+estado = gpio.LOW
+gpio.mode(pin, gpio.OUTPUT)
+miTemporizador = tmr.create()
+miTemporizador:register(1000, tmr.ALARM_AUTO, function()
+	if estado == gpio.LOW then
+		estado = gpio.HIGH)
+	else
+		estado = gpio.LOW
+	end
+	gpio.write(pin, estado)
+	print("LED en estado: "..estado)
+end)
+miTemporizador:start()
+
