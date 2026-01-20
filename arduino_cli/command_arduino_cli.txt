@@ -1,0 +1,53 @@
+arduino-cli core update-index
+
+arduino-cli board list
+
+# Instalar el core necesario:
+# Si ves que es una placa tipo "AVR" pero no la reconoce, usa
+arduino-cli core install arduino:avr
+
+# Para el caso de una ESP32S3-WROOM, como es desarrollada por Espressif
+
+# 1. Agregar la URL del repositorio de Espressif
+arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
+# Para el caso de la esp8266 (nodemcu) el proceso es similar pero con la siguiente url: 
+arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+
+# 2. Actualizar el índice
+arduino-cli core update-index
+
+
+# 3. Instalar el core de ESP32
+arduino-cli core install esp32:esp32 -v
+# Si excede el tiempo de espera
+arduino-cli core install esp32:esp32 --timeout 0
+
+# Si el arduino-cli es antigüo y no reconoce timeout
+rm -rf ~/.arduino15/staging/packages/*
+arduino-cli core download esp32:esp32
+arduino-cli core install esp32:esp32
+
+# Si esto aún no funciona por timeout puedes descargar el .tar.gz o .zip
+# y luego localizarlos en la carpeta que arduino-cli lee para saber si 
+# está instalado o no.
+cd ~/.arduino15/staging/packages/
+rm -rf ~/.arduino15/staging/packages/*
+# Ejecutar el instalador, si se da el error de timeout borrar el paquete 
+# que se estaba intentando instalar y descargarlo con wget. Ejemplo:
+wget https://github.com/espressif/arduino-esp32/releases/download/3.3.5/esp32-3.3.5-libs.zip
+# Con el verbose se puede identificar la ruta o url
+# Luego, volver a ejecutar el comando de instalación y repetir con todos los 
+# paquetes que tengan problemas con el timeout
+arduino-cli core install esp32:esp32
+
+
+# 4. Identificar el FQBN exacto
+arduino-cli board listall esp32s3
+
+# 5. Configuración para ESP32-S3 WROOM
+arduino-cli board listall | grep esp32s3
+arduino-cli board listall | grep nodemcu
+
+
