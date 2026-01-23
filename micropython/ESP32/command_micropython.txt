@@ -1,5 +1,9 @@
 # https://github.com/PIBSAS/MicroPython_ESP32-S3-WROOM-1-N16R8_with_SmartConfig
 # Para la placa ESP32S3-N16R8 WROOM se deben seguir los pasos del repositorio
+# Sin embargo, aún no he podido compilar mi propia versión
+# Por ahora para la placa que tengo con cámara (módulo OV2640), SPIRAM Octal, ESP32_S3 utilicé el firmware de:
+# https://github.com/cnadler86/micropython-camera-API/releases
+# https://github.com/prusa3d/Prusa-Firmware-ESP32-Cam/blob/master/doc/Freenove%20ESP32-S3-Wroom/README.md#esp32
 
 minicom -D /dev/ttyUSB0 -b 115200
 
