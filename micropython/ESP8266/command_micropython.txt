@@ -1,0 +1,25 @@
+# Para preparar el sistema seguir los pasos de la documentación oficial
+# https://docs.micropython.org/en/latest/esp8266/tutorial/index.html
+
+minicom -D /dev/ttyUSB0 -b 115200
+
+
+# Para borrar la memoria flash desde la shell
+
+esptool --port /dev/ttyUSB0 --baud 460800 erase_flash
+
+esptool --port /dev/ttyUSB0 --baud 460800 write_flash --flash_size=detect --flash_mode dout 0x00000 firmware.bin
+
+
+# Ejemplo de blink
+import machine
+import time
+led = machine.Pin(2, machine.Pin.OUT)
+while True:
+	led.value(0)
+	time.sleep(0.5)
+	led.value(1)
+	time.sleep(0.5)
+
+
+# Ejemplos: https://docs.micropython.org/en/latest/esp8266/quickref.html
