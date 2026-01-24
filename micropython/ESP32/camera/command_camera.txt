@@ -1,0 +1,18 @@
+Para tomar una foto, conectarse a una red wifi y enviarla a mi PC se utilzará 
+el archivo main.py (que se ejecuta después de boot.py si lo hubiese).
+
+Para subir el archivo se requiere utilizar mpremote (de micropython) o ampy (de Adrafruit).
+
+Con mpremote:
+pip install mpremote
+
+mpremote devs
+
+mpremote connect /dev/ttyACM0 ls
+
+Op1:
+mpremote connect /dev/ttyACM0 cp main.py :main.py
+Op2:
+mpremote connect /dev/ttyACM0 repl
+
+mpremote connect /dev/ttyACM0 rm :main.py
