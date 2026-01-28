@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # --- Configuración de parámetros ---
 DATASET_PATH = 'dataset'  # Tu carpeta con las 6 subcarpetas
-IMG_SIZE = (224, 224)
+IMG_SIZE = (240, 240)
 BATCH_SIZE = 32
 EPOCHS = 10
 
@@ -38,7 +38,7 @@ val_generator = datagen.flow_from_directory(
 
 # --- 2. Definición de la Arquitectura ---
 # Cargamos MobileNetV2 pre-entrenado sin la capa superior (cabezal)
-base_model = MobileNetV2(input_shape=(224, 224, 3), include_top=False, weights='imagenet')
+base_model = MobileNetV2(input_shape=(240, 240, 3), include_top=False, weights='imagenet')
 base_model.trainable = False  # No entrenamos las capas base para ir más rápido
 
 model = models.Sequential([
