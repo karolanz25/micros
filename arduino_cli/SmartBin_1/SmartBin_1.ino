@@ -116,16 +116,35 @@ void moverMotores(String tipo) {
   } 
   // ... repetir lógica para otros tipos ...
   **/
-  if (tipo == "plastico") { 
+  if (tipo == "cardboard") { 
     fijarColor(255,0,0); // Red
-  } else if (tipo == "vidrio") { 
+  } else if (tipo == "glass") { 
     fijarColor(0,255,0); // Green
-  } else if (tipo == "papel") { 
+  } else if (tipo == "metal") { 
     fijarColor(0,0,255); // Blue
+  } else if (tipo == "paper") { 
+    fijarColor(100, 110, 0); // Naranja
+  } else if (tipo == "plastic") { 
+    fijarColor(0, 255, 255); // Cyan
+  } else if (tipo == "trash") { 
+    fijarColor(128, 200, 0); // Amarillo
   } else {
+    fijarColor(255,0,0); // Red
+    delay(1000);
+    fijarColor(0,0,0); // Red
+    delay(1000);
+    fijarColor(255,0,0); // Red
+    delay(1000);
+    fijarColor(0,0,0); // Red
+    delay(1000);
     fijarColor(128, 0, 255); // Morado
   }
-
+  //fijarColor(0, 0, 0); // Off
+  //fijarColor(128, 200, 0); // Amarillo
+  //fijarColor(0, 255, 255); // Cyan
+  //fijarColor(128, 0, 255); // Morado
+  //fijarColor(100, 110, 0); // Naranja
+  //fijarColor(180, 255, 255); // Blanco
 }
 
 // Función para mezclar (R, G, B de 0 a 255)

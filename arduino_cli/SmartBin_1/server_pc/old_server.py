@@ -2,42 +2,36 @@ from flask import Flask, request
 import cv2
 import numpy as np
 import tensorflow as tf
-import os
+# from PIL import Image
+import io
 import time
 
 app = Flask(__name__)
 
-# Asegurar que la carpeta de capturas exista al arrancar
-if not os.path.exists('capturas'):
-    os.makedirs('capturas')
-    print("Carpeta 'capturas' creada.")
-
-# Cargar modelo
-print("Cargando modelo...")
 model = tf.keras.models.load_model('modelo_residuos_s3.h5')
 labels = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
-print("Modelo listo.")
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # 1. Validar que lleguen datos
-        if not request.data:
-            return "sin_datos", 400
-
-        # 2. Cargar los bytes
+        # 1. Cargar los bytes
         nparr = np.frombuffer(request.data, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        print("Foto capturada")
 
         if img is None:
             print("Error: No se pudo decodificar la imagen")
             return "error_imagen", 400
 
-        print("Foto recibida correctamente")
-
-        # 3. Preprocesamiento
+        # 2. Preprocesamiento CRÍTICO para 240x240
+        # Convertimos BGR (OpenCV) a RGB (TensorFlow)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Redimensionamos exactamente a lo que espera tu modelo reentrenado
         img_resizada = cv2.resize(img_rgb, (240, 240)) 
+
+        # 3. Normalización y Ajuste de Dimensiones
+        # El modelo espera (None, 240, 240, 3). El expand_dims añade el "1" inicial.
         img_final = img_resizada / 255.0
         img_final = np.expand_dims(img_final, axis=0)
 
@@ -45,23 +39,21 @@ def predict():
         pred = model.predict(img_final)
         indice = np.argmax(pred)
         clase_detectada = labels[indice]
-        certeza = np.max(pred) * 100
         
-        # 5. Guardar imagen ANTES de responder
         timestamp = int(time.time())
         nombre_archivo = f"capturas/{clase_detectada}_{timestamp}.jpg"
+
         cv2.imwrite(nombre_archivo, img)
 
-        print(f"Predicción: {clase_detectada} ({certeza:.2f}%) -> Guardado en {nombre_archivo}")
+        print(f"Predicción exitosa: {clase_detectada} con {np.max(pred)*100:.2f}% de certeza")
         
-        # Devolver solo el string de la clase
-        return str(clase_detectada)
+        return clase_detectada
 
     except Exception as e:
-        print(f"ERROR CRÍTICO: {str(e)}")
+        # Esto te dirá exactamente qué falló en la consola de Linux
+        print(f"Error interno en la predicción: {e}")
         return "error_servidor", 500
 
+
 if __name__ == '__main__':
-    # threaded=False puede ayudar si hay problemas de contexto con TF
-    # debug=False evita que el modelo se cargue dos veces en memoria
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    app.run(host='0.0.0.0', port=5000) # El 0.0.0.0 es para que sea visible en la red local
